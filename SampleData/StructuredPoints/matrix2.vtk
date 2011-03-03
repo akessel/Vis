@@ -1,0 +1,20 @@
+# vtk DataFile Version 2.0
+A Simple Matrix of values
+ASCII
+DATASET STRUCTURED_POINTS
+DIMENSIONS 3 3 3
+ORIGIN 0 0 0
+SPACING 1 1 1
+
+POINT_DATA 27
+SCALARS values unsigned_char
+LOOKUP_TABLE default
+1 1 1
+1 1 1
+1 1 1
+1 1 1
+1 1 1
+1 1 1
+1 1 1
+1 1 1
+1 1 1
