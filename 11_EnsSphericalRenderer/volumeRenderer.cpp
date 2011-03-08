@@ -13,7 +13,7 @@
 
 #include "MyUnstructuredGridReader.h"
 
-#define FILEPATH "../SampleData/RAW/ens.raw"
+#define FILEPATH "../SampleData/RAW/ens0.raw"
 //#define FILEPATH "../SampleData/StructuredPoints/matrix2.vtk"
 
 
@@ -28,7 +28,8 @@ int main(int, char* [])
 	
 	// load the volume data
 //	MyUnstructuredGridReader reader(FILEPATH,258,256,512,0,0,0);
-	MyUnstructuredGridReader reader(FILEPATH,64,64,64,0,0,0);
+	MyUnstructuredGridReader reader(FILEPATH,33,32,64,0,0,0);
+//	MyUnstructuredGridReader reader(FILEPATH,65,64,128,0,0,0);
 	
 	/*
 	// load the volume data
@@ -45,16 +46,22 @@ int main(int, char* [])
 	*/
 	// Create transfer mapping scalar value to opacity.
 	vtkPiecewiseFunction *opacityTransferFunction = vtkPiecewiseFunction::New();
-	opacityTransferFunction->AddPoint(0.0000000006043, 0.18);
-	opacityTransferFunction->AddPoint(0.0000000116628, 0.7);
+//	opacityTransferFunction->AddPoint(0.0000000006043, 0.18);
+//	opacityTransferFunction->AddPoint(0.0000000116628, 0.7);
+	opacityTransferFunction->AddPoint(0.-0.0000000001434, 1.0);
+	opacityTransferFunction->AddPoint(0.000000003529, 1.0);
 
 	 
 	// Create transfer mapping scalar value to color.
 	vtkColorTransferFunction *colorTransferFunction = vtkColorTransferFunction::New();
-	colorTransferFunction->AddRGBPoint(0.000000000903996, 255.0, 0.0, 0.0);
-	colorTransferFunction->AddRGBPoint(0.00000000362272, 4.0, 255.0, 0.0);
-	colorTransferFunction->AddRGBPoint(0.00000000995063, 0.0, 0.0, 255.0);
-	colorTransferFunction->AddRGBPoint(0.0000000153698, 251.0, 0.0, 255.0);
+	colorTransferFunction->AddRGBPoint(0.-0.0000000001434, 255.0, 81.0, 0.0);
+	colorTransferFunction->AddRGBPoint(0.000000003529, 132.0, 255.0, 0.0);
+	colorTransferFunction->AddHSVPoint(0.-0.0000000001434, 19.0, 255.0, 255.0);
+	colorTransferFunction->AddHSVPoint(0.000000003529, 89.0, 255.0, 255.0);
+//	colorTransferFunction->AddRGBPoint(0.000000000903996, 255.0, 0.0, 0.0);
+//	colorTransferFunction->AddRGBPoint(0.00000000362272, 4.0, 255.0, 0.0);
+//	colorTransferFunction->AddRGBPoint(0.00000000995063, 0.0, 0.0, 255.0);
+//	colorTransferFunction->AddRGBPoint(0.0000000153698, 251.0, 0.0, 255.0);
 	
 	// set up the volume properties
 	vtkVolumeProperty *property = vtkVolumeProperty::New();
@@ -66,7 +73,9 @@ int main(int, char* [])
 	// set up mapper and compositing function
 	vtkHAVSVolumeMapper *mapper = vtkHAVSVolumeMapper::New();
 //	mapper->SetInput(filter.GetOutput());
+printf("Mapper Getting output\n");
 	mapper->SetInput(reader.GetOutput());
+printf("Mapper got output\n");
 
 	// set up the volume (actor)
 	vtkVolume *volume = vtkVolume::New();
