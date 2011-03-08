@@ -48,14 +48,14 @@ int main(int, char* [])
 	vtkPiecewiseFunction *opacityTransferFunction = vtkPiecewiseFunction::New();
 //	opacityTransferFunction->AddPoint(0.0000000006043, 0.18);
 //	opacityTransferFunction->AddPoint(0.0000000116628, 0.7);
-	opacityTransferFunction->AddPoint(0.-0.0000000001434, 1.0);
-	opacityTransferFunction->AddPoint(0.000000003529, 1.0);
+	opacityTransferFunction->AddPoint(0.-0.0000000001434, 0.0);
+	opacityTransferFunction->AddPoint(0.000000003529, 0.4);
 
 	 
 	// Create transfer mapping scalar value to color.
 	vtkColorTransferFunction *colorTransferFunction = vtkColorTransferFunction::New();
-	colorTransferFunction->AddRGBPoint(0.-0.0000000001434, 255.0, 81.0, 0.0);
-	colorTransferFunction->AddRGBPoint(0.000000003529, 132.0, 255.0, 0.0);
+//	colorTransferFunction->AddRGBPoint(0.-0.0000000001434, 255.0, 81.0, 0.0);
+//	colorTransferFunction->AddRGBPoint(0.000000003529, 132.0, 255.0, 0.0);
 	colorTransferFunction->AddHSVPoint(0.-0.0000000001434, 19.0, 255.0, 255.0);
 	colorTransferFunction->AddHSVPoint(0.000000003529, 89.0, 255.0, 255.0);
 //	colorTransferFunction->AddRGBPoint(0.000000000903996, 255.0, 0.0, 0.0);

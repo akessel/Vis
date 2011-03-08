@@ -54,6 +54,9 @@ class MyUnstructuredGridReader
 			vtkPoints *points = vtkPoints::New();
 			vtkFloatArray *scalars = vtkFloatArray::New();
 			vtkCellArray *cells = vtkCellArray::New();
+			
+			points->SetNumberOfPoints(numPoints);
+			scalars->SetNumberOfValues(numPoints);
 
 			float max = -1000000.0;
 			float min = 1000000.0;
@@ -70,7 +73,7 @@ class MyUnstructuredGridReader
 						float value = this->reader.GetNextValue();
 						
 						if(value > max) max = value;
-						else if(value < min) min = value;
+						if(value < min) min = value;
 						
 						double rad = k * ( (this->maxRad - this->minRad) / this->nRad ) + this->minRad;
 						double phi = j * ( (this->maxLat - this->minLat) / this->nLat ) + this->minLat;
