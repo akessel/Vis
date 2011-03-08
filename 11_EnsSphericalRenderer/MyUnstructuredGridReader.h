@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <string>
+#include <math.h>
 #include "vtkUnstructuredGrid.h"
 #include "vtkPoints.h"
 #include "vtkPointData.h"
@@ -10,6 +11,7 @@
 #include "vtkCellType.h"
 #include "vtkCellArray.h"
 #include "vtkTetra.h"
+#include "vtkVertex.h"
 #include "MyFileReader.h"
 
 using namespace std;
@@ -17,22 +19,28 @@ using namespace std;
 class MyUnstructuredGridReader
 {
 	private:
-		int nX, nY, nZ;
+		int nRad, nLat, nLong;
 		
-		int phi, theta, rho; // long, lat, radius
+		double minRad, minLat, minLong;
+		
+		double maxRad, maxLat, maxLong;
 		
 		MyFileReader<float> reader;
 
 	public:
-		MyUnstructuredGridReader(string filename, int nX, int nY, int nZ, int phi, int theta, int rho)
+		MyUnstructuredGridReader(string filename, int nRad, int nLat, int nLong,
+								 double minRad, double minLat, double minLong, double maxRad, double maxLat, double maxLong)
 		{
 			this->reader.SetFilename(filename);
-			this->nX = nX;
-			this->nY = nY;
-			this->nZ = nZ;
-			this->phi = phi;
-			this->theta = theta;
-			this->rho = rho;
+			this->nRad = nRad;
+			this->nLat = nLat;
+			this->nLong = nLong;
+			this->minRad = minRad;
+			this->minLat = minLat;
+			this->minLong = minLong;
+			this->maxRad = maxRad;
+			this->maxLat = maxLat;
+			this->maxLong = maxLong;
 		}
 		
 		vtkUnstructuredGrid * GetOutput()
@@ -41,7 +49,7 @@ class MyUnstructuredGridReader
 	
 			vtkUnstructuredGrid *grid = vtkUnstructuredGrid::New();
 	
-			int numPoints = this->nX * this->nY * this->nZ;
+			int numPoints = this->nRad * this->nLat * this->nLong;
 	
 			vtkPoints *points = vtkPoints::New();
 			vtkFloatArray *scalars = vtkFloatArray::New();
@@ -52,27 +60,35 @@ class MyUnstructuredGridReader
 	
 			// iterate through the points, transforming them to spherical
 			int count = 0;
-			for(int i = 0; i < this->nX; i++)
+			for(int i = 0; i < this->nLong; i++)			
 			{		
-				for(int j = 0; j < this->nY; j++)
+				for(int j = 0; j < this->nLat; j++)
 				{
-					for(int k = 0; k < this->nZ; k++)
+					for(int k = 0; k < this->nRad; k++)
 					{
 						
 						float value = this->reader.GetNextValue();
 						
 						if(value > max) max = value;
-						else if(value < min) min = value;						
-				
-						double di = ((double)i)/this->nX;
-						double dj = ((double)j)/this->nY;
-						double dk = ((double)k)/this->nZ;
+						else if(value < min) min = value;
 						
-						points->InsertPoint(count, di, dj, dk);									
+						double rad = k * ( (this->maxRad - this->minRad) / this->nRad ) + this->minRad;
+						double phi = j * ( (this->maxLat - this->minLat) / this->nLat ) + this->minLat;
+						double theta = i * ( (this->maxLong - this->minLong) / this->nLong ) + this->minLong;
+						
+						double x = rad * cos(phi) * cos(theta);
+						double y = rad * cos(phi) * sin(theta);
+						double z = rad * sin(phi);
+						/*
+						double x = ((double)k)/this->nRad;
+						double y = ((double)j)/this->nLat;
+						double z = ((double)i)/this->nLong;
+						*/
+						points->InsertPoint(count, x, y, z);									
 						scalars->InsertValue(count, value);
 				
 						count++;
-								
+
 						if(i > 0 && j > 0 && k > 0)
 						{
 							// find the indices of the points defining the vertices of the cube
@@ -133,13 +149,14 @@ class MyUnstructuredGridReader
 				}
 			}
 			
+			/*
 			double coord[3];
 			for(int i = 0; i < count; i += 10)
 			{
 				points->GetPoint(i, coord);
 				printf("Point %i: (%f, %f, %f)\n", i, coord[0], coord[1], coord[2]);
 			}
-	
+			*/
 			printf("Inserting points...\n");
 			grid->SetPoints(points);
 			printf("Inserting scalars...\n");
@@ -161,7 +178,7 @@ class MyUnstructuredGridReader
 	private:		
 		int LinearizeCoordinate(int i, int j, int k)
 		{
-			return i*(this->nX) + j*(this->nY) + k;
+			return i*(this->nRad) + j*(this->nLat) + k;
 		}
 };
 

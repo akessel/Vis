@@ -28,7 +28,7 @@ int main(int, char* [])
 	
 	// load the volume data
 //	MyUnstructuredGridReader reader(FILEPATH,258,256,512,0,0,0);
-	MyUnstructuredGridReader reader(FILEPATH,33,32,64,0,0,0);
+	MyUnstructuredGridReader reader(FILEPATH,33,32,64,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
 //	MyUnstructuredGridReader reader(FILEPATH,65,64,128,0,0,0);
 	
 	/*

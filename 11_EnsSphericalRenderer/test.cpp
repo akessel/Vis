@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "MyFileReader.h"
 
-#define FILEPATH "../SampleData/RAW/ens.raw"
+#define FILEPATH "../SampleData/RAW/ens0.raw"
 
 int main(int argc, char *argv[])
 {
