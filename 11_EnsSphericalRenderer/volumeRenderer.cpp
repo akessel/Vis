@@ -54,10 +54,10 @@ int main(int, char* [])
 	 
 	// Create transfer mapping scalar value to color.
 	vtkColorTransferFunction *colorTransferFunction = vtkColorTransferFunction::New();
-//	colorTransferFunction->AddRGBPoint(0.-0.0000000001434, 255.0, 81.0, 0.0);
-//	colorTransferFunction->AddRGBPoint(0.000000003529, 132.0, 255.0, 0.0);
-	colorTransferFunction->AddHSVPoint(0.-0.0000000001434, 19.0, 255.0, 255.0);
-	colorTransferFunction->AddHSVPoint(0.000000003529, 89.0, 255.0, 255.0);
+	colorTransferFunction->AddRGBPoint(0.-0.0000000001434, 255.0, 81.0, 0.0);
+	colorTransferFunction->AddRGBPoint(0.000000003529, 132.0, 255.0, 0.0);
+//	colorTransferFunction->AddHSVPoint(0.-0.0000000001434, 19.0, 255.0, 255.0);
+//	colorTransferFunction->AddHSVPoint(0.000000003529, 89.0, 255.0, 255.0);
 //	colorTransferFunction->AddRGBPoint(0.000000000903996, 255.0, 0.0, 0.0);
 //	colorTransferFunction->AddRGBPoint(0.00000000362272, 4.0, 255.0, 0.0);
 //	colorTransferFunction->AddRGBPoint(0.00000000995063, 0.0, 0.0, 255.0);
