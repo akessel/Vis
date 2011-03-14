@@ -188,14 +188,6 @@ class MyUnstructuredGridReader
 				}
 			}
 			
-			/*
-			double coord[3];
-			for(int i = 0; i < count; i += 10)
-			{
-				points->GetPoint(i, coord);
-				printf("Point %i: (%f, %f, %f)\n", i, coord[0], coord[1], coord[2]);
-			}
-			*/
 			printf("Inserting points...\n");
 			grid->SetPoints(points);
 			printf("Inserting scalars...\n");
@@ -219,15 +211,6 @@ class MyUnstructuredGridReader
 	private:		
 		int LinearizeCoordinate(int i, int j, int k)
 		{
-			//int ijCount = this->nLong * this->nLat; // the number of elements for a ij slice
-						
-			//return i*(ijCount) + j*(this->nLat) + k;
-			
-			
-			
-			//return i*this->nLong*this->nLat + j*this->nLat + k;
-			
-			
 			return i*this->nLat*this->nRad + j*this->nRad + k;
 		}
 };
