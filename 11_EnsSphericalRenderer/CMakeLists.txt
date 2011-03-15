@@ -14,7 +14,7 @@ ELSE(VTK_FOUND)
 ENDIF(VTK_FOUND)
 
 # define the executable
-ADD_EXECUTABLE(volumeRenderer volumeRenderer.cpp MyUnstructuredGridReader.cpp)
+ADD_EXECUTABLE(volumeRenderer volumeRenderer.cpp)
 
 TARGET_LINK_LIBRARIES(volumeRenderer
 	vtkCommon
