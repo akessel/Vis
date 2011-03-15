@@ -18,7 +18,7 @@
 
 using namespace std;
 
-class MyUnstructuredGridReader
+class MyStructuredPointsReader
 {
 	private:
 		int nRad, nLat, nLong;

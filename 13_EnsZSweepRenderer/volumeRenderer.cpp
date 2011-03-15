@@ -1,16 +1,12 @@
 #include "vtkRenderer.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
+#include "vtkUnstructuredGridVolumeZSweepMapper.h"
 #include "vtkVolumeRayCastCompositeFunction.h"
 #include "vtkColorTransferFunction.h"
 #include "vtkPiecewiseFunction.h"
 #include "vtkVolumeProperty.h"
 #include "vtkVolume.h"
-#include "vtkImageReader2.h"
-#include "vtkHAVSVolumeMapper.h"
-#include "vtkImageToStructuredPoints.h"
-#include "vtkStructuredPointsReader.h"
-
 #include "MyUnstructuredGridReader.h"
 
 int main(int, char* [])
@@ -27,7 +23,11 @@ int main(int, char* [])
 	MyUnstructuredGridReader reader("../SampleData/RAW/ens0.raw",33,32,64,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
 //	MyUnstructuredGridReader reader("../SampleData/RAW/ens1.raw",65,64,128,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
 //	MyUnstructuredGridReader reader("../SampleData/RAW/ens2.raw",129,128,256,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
+//	function->SetCompositeMethodToInterpolateFirst();
 	
+	vtkUnstructuredGridVolumeZSweepMapper *mapper = vtkUnstructuredGridVolumeZSweepMapper::New();
+	mapper->SetInput(reader.GetOutput());
+ 
 	// Create transfer mapping scalar value to opacity.
 	vtkPiecewiseFunction *opacityTransferFunction = vtkPiecewiseFunction::New();
 	opacityTransferFunction->AddPoint(-0.000000000903996, 0.0); // quantized = 0
@@ -35,7 +35,7 @@ int main(int, char* [])
 	opacityTransferFunction->AddPoint(0.00000000995172, 0.667); // quantized = 170
 	opacityTransferFunction->AddPoint(0.0000000153714, 1.0); // quantized = 255
 	 
-	// Create transfer mapping scalar value to color.	
+	// Create transfer mapping scalar value to color.
 	vtkColorTransferFunction *colorTransferFunction = vtkColorTransferFunction::New();
 	colorTransferFunction->SetColorSpaceToHSV();
 	colorTransferFunction->AddRGBPoint(-0.000000000903996, 1.0, 0.0, 0.0);
@@ -54,19 +54,13 @@ int main(int, char* [])
 	property->SetScalarOpacity(opacityTransferFunction);
 	property->ShadeOff();
 	property->SetInterpolationTypeToLinear();
-
-	// set up mapper and compositing function
-	vtkHAVSVolumeMapper *mapper = vtkHAVSVolumeMapper::New();
-	printf("Mapper Getting output\n");
-	mapper->SetInput(reader.GetOutput());
-	printf("Mapper got output\n");
-
+	
 	// set up the volume (actor)
 	vtkVolume *volume = vtkVolume::New();
 	volume->SetMapper(mapper);
 	volume->SetProperty(property);	
-	ren1->AddVolume(volume);
-
+	ren1->AddViewProp(volume);
+	
 	// start the rendering
 	iren->Initialize();
 	iren->Start();
