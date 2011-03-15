@@ -36,6 +36,10 @@ int main(int, char* [])
 	opacityTransferFunction->AddPoint(0.00000000451572, 0.333);	// quantized = 85
 	opacityTransferFunction->AddPoint(0.00000000995172, 0.667); // quantized = 170
 	opacityTransferFunction->AddPoint(0.0000000153714, 1.0); // quantized = 255
+//	opacityTransferFunction->AddPoint(-0.000000000903996, 0.0); // quantized = 0
+//	opacityTransferFunction->AddPoint(0.00000000451572, 0.333);	// quantized = 85
+//	opacityTransferFunction->AddPoint(0.00000000995172, 0.667); // quantized = 170
+//	opacityTransferFunction->AddPoint(0.0000000153714, 1.0); // quantized = 255
 
 	 
 	// Create transfer mapping scalar value to color.	
@@ -43,15 +47,25 @@ int main(int, char* [])
 	double range[] = {-0.000000000903996, 0.000000015698};
 //	colorTransferFunction->AdjustRange(range);
 	colorTransferFunction->SetColorSpaceToHSV();
-	colorTransferFunction->AddRGBPoint(-0.000000000903996, 255.0, 0.0, 0.0);
-	colorTransferFunction->AddRGBPoint(0.00000000451572, 4.0, 255.0, 0.0);
-	colorTransferFunction->AddRGBPoint(0.00000000995172, 0.0, 0.0, 255.0);
-	colorTransferFunction->AddRGBPoint(0.0000000153714, 251.0, 0.0, 255.0);
+	colorTransferFunction->AddRGBPoint(-0.000000000903996, 1.0, 0.0, 0.0);
+	colorTransferFunction->AddRGBPoint(0.00000000451572, 0.0, 1.0, 0.0);
+	colorTransferFunction->AddRGBPoint(0.00000000995172, 0.0, 0.0, 1.0);
+	colorTransferFunction->AddRGBPoint(0.0000000153714, 1.0, 0.0, 1.0);
 	
-	colorTransferFunction->AddHSVPoint(-0.000000000903996, 0.0, 255.0, 255.0);
-	colorTransferFunction->AddHSVPoint(0.00000000451572, 119.0, 255.0, 255.0);
-	colorTransferFunction->AddHSVPoint(0.00000000995172, 240.0, 255.0, 255.0);
-	colorTransferFunction->AddHSVPoint(0.0000000153714, 299.0, 255.0, 255.0);
+	colorTransferFunction->AddHSVPoint(-0.000000000903996, 0.0, 1.0, 1.0);
+	colorTransferFunction->AddHSVPoint(0.00000000451572, 0.467, 1.0, 1.0);
+	colorTransferFunction->AddHSVPoint(0.00000000995172, 0.94, 1.0, 1.0);
+	colorTransferFunction->AddHSVPoint(0.0000000153714, 1.17, 1.0, 1.0);
+	
+//	colorTransferFunction->AddRGBPoint(-0.000000000903996, 255.0, 0.0, 0.0);
+//	colorTransferFunction->AddRGBPoint(0.00000000451572, 4.0, 255.0, 0.0);
+//	colorTransferFunction->AddRGBPoint(0.00000000995172, 0.0, 0.0, 255.0);
+//	colorTransferFunction->AddRGBPoint(0.0000000153714, 251.0, 0.0, 255.0);
+//	
+//	colorTransferFunction->AddHSVPoint(-0.000000000903996, 0.0, 255.0, 255.0);
+//	colorTransferFunction->AddHSVPoint(0.00000000451572, 119.0, 255.0, 255.0);
+//	colorTransferFunction->AddHSVPoint(0.00000000995172, 240.0, 255.0, 255.0);
+//	colorTransferFunction->AddHSVPoint(0.0000000153714, 299.0, 255.0, 255.0);
 	
 	// set up the volume properties
 	vtkVolumeProperty *property = vtkVolumeProperty::New();
