@@ -88,9 +88,9 @@ class MyUnstructuredGridReader
 						double phi = j * ( (this->maxLat - this->minLat) / this->nLat ) + this->minLat;
 						double theta = i * ( (this->maxLong - this->minLong) / this->nLong ) + this->minLong;
 						
-						double x = rad * cos(phi) * cos(theta);
-						double y = rad * cos(phi) * sin(theta);
-						double z = rad * sin(phi);
+						double x = rad * sin(theta*PI/180.0) * cos(phi*PI/180.0);
+						double y = rad * sin(phi*PI/180.0);
+						double z = rad * cos(theta*PI/180.0) * cos(phi*PI/180.0);
 						/*
 						double x = (double)k;
 						double y = (double)j;
