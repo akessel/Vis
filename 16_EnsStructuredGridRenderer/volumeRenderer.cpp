@@ -23,10 +23,10 @@ int main(int, char* [])
 	iren->SetRenderWindow(renWin);
 	
 	// load the volume data
-//	MyUnstructuredGridReader reader("../SampleData/RAW/ens.raw",258,256,512,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
-	MyUnstructuredGridReader reader("../SampleData/RAW/ens0.raw",33,32,64,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
-//	MyUnstructuredGridReader reader("../SampleData/RAW/ens1.raw",65,64,128,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
-//	MyUnstructuredGridReader reader("../SampleData/RAW/ens2.raw",129,128,256,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
+//	MyStructuredGridReader reader("../SampleData/RAW/ens.raw",258,256,512,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
+	MyStructuredGridReader reader("../SampleData/RAW/ens0.raw",33,32,64,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
+//	MyStructuredGridReader reader("../SampleData/RAW/ens1.raw",65,64,128,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
+//	MyStructuredGridReader reader("../SampleData/RAW/ens2.raw",129,128,256,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
 	
 	// Create transfer mapping scalar value to opacity.
 	vtkPiecewiseFunction *opacityTransferFunction = vtkPiecewiseFunction::New();
@@ -60,12 +60,27 @@ int main(int, char* [])
 	property->ShadeOn();
 	property->SetInterpolationTypeToLinear();
 
+	// filter the structured grid
+	vtkStructuredGridGeometryFilter *filter = vtkStructuredGridGeometryFilter::New();
+	filter->SetInputConnection(structuredGrid->GetProducerPort());
+	filter->Update();
+	
+	// Create a mapper and actor
+	vtkPolyDataMapper *mapper = vtkPolyDataMapper::New();
+	mapper->SetInputConnection(filter->GetOutputPort());
+//	vtkActor *actor = vtkActor::New();
+//	actor->SetMapper(mapper);
+//	actor->GetProperty()->SetPointSize(3);
+	
+
+
+/*
 	// set up mapper and compositing function
 	vtkHAVSVolumeMapper *mapper = vtkHAVSVolumeMapper::New();
 	printf("Mapper Getting output\n");
 	mapper->SetInput(reader.GetOutput());
 	printf("Mapper got output\n");
-
+*/
 	// set up the volume (actor)
 	vtkVolume *volume = vtkVolume::New();
 	volume->SetMapper(mapper);
