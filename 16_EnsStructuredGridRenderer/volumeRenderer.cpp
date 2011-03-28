@@ -10,8 +10,10 @@
 #include "vtkHAVSVolumeMapper.h"
 #include "vtkImageToStructuredPoints.h"
 #include "vtkStructuredPointsReader.h"
+#include "vtkVolumeRayCastMapper.h"
+#include "vtkCutter.h"
 
-#include "MyUnstructuredGridReader.h"
+#include "MyStructuredGridReader.h"
 
 int main(int, char* [])
 {
@@ -60,19 +62,24 @@ int main(int, char* [])
 	property->ShadeOn();
 	property->SetInterpolationTypeToLinear();
 
+	/*
 	// filter the structured grid
 	vtkStructuredGridGeometryFilter *filter = vtkStructuredGridGeometryFilter::New();
-	filter->SetInputConnection(structuredGrid->GetProducerPort());
+	filter->SetInputConnection(reader.GetOutput()->GetProducerPort());
 	filter->Update();
-	
+	*/
+	/*
 	// Create a mapper and actor
 	vtkPolyDataMapper *mapper = vtkPolyDataMapper::New();
 	mapper->SetInputConnection(filter->GetOutputPort());
-//	vtkActor *actor = vtkActor::New();
-//	actor->SetMapper(mapper);
+	vtkActor *actor = vtkActor::New();
+	actor->SetMapper(mapper);
 //	actor->GetProperty()->SetPointSize(3);
-	
+	ren1->AddActor(actor);
+	*/
 
+	vtkVolumeRayCastMapper *mapper = vtkVolumeRayCastMapper::New();
+	mapper->SetInput(reader.GetOutput());
 
 /*
 	// set up mapper and compositing function
@@ -81,6 +88,7 @@ int main(int, char* [])
 	mapper->SetInput(reader.GetOutput());
 	printf("Mapper got output\n");
 */
+
 	// set up the volume (actor)
 	vtkVolume *volume = vtkVolume::New();
 	volume->SetMapper(mapper);
