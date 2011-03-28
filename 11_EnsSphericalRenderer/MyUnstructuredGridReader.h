@@ -76,8 +76,8 @@ class MyUnstructuredGridReader
 						
 						float value = this->reader.GetNextValue();
 						
-						if(value > max) max = value;
-						if(value < min) min = value;
+						//if(value > max) max = value;
+						//if(value < min) min = value;
 						
 						double rad = k * ( (this->maxRad - this->minRad) / this->nRad ) + this->minRad;
 						double phi = j * ( (this->maxLat - this->minLat) / this->nLat ) + this->minLat;
@@ -158,7 +158,7 @@ class MyUnstructuredGridReader
 			printf("Ending get output...\n");
 			
 			printf("Count = %i\n", count);
-			printf("Min = %e, Max = %e\n", min, max);
+			//printf("Min = %e, Max = %e\n", min, max);
 			
 			return grid;		
 		}
