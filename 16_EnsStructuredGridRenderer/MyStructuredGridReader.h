@@ -60,6 +60,13 @@ class MyStructuredGridReader
 			points->SetNumberOfPoints(numPoints);
 			scalars->SetNumberOfValues(numPoints);
 
+			double xMin = 10000000.0;
+			double xMax = -10000000.0;
+			double yMin = 10000000.0;
+			double yMax = -10000000.0;
+			double zMin = 10000000.0;
+			double zMax = -10000000.0;
+
 			/*
 			this->nLong = 2;
 			this->nLat = 2;
@@ -86,6 +93,14 @@ class MyStructuredGridReader
 						double x = rad * sin(theta*PI/180.0) * cos(phi*PI/180.0);
 						double y = rad * sin(phi*PI/180.0);
 						double z = rad * cos(theta*PI/180.0) * cos(phi*PI/180.0);
+						
+						if(x > xMax) xMax = x;
+						if(x < xMin) xMin = x;
+						if(y > yMax) yMax = y;
+						if(y < yMin) yMin = y;
+						if(z > zMax) zMax = z;
+						if(z < zMin) zMin = z;
+						
 						/*
 						x = (double)k;
 						y = (double)j;
@@ -107,6 +122,9 @@ class MyStructuredGridReader
 			printf("Ending get output...\n");
 			
 			printf("Count = %i\n", count);
+			printf("x: Min = %e, Max = %e\n", xMin, xMax);
+			printf("y: Min = %e, Max = %e\n", yMin, yMax);
+			printf("z: Min = %e, Max = %e\n", zMin, zMax);			
 			//printf("Min = %e, Max = %e\n", min, max);
 			
 			return grid;		

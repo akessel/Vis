@@ -35,10 +35,10 @@ int main(int, char* [])
 //	opacityTransferFunction->AddPoint(0.00000000995172, 0.667); // quantized = 170
 //	opacityTransferFunction->AddPoint(0.0000000153714, 1.0); // quantized = 255
 	
-	opacityTransferFunction->AddPoint(-0.000000000903996, 1000.0); // quantized = 0
-	opacityTransferFunction->AddPoint(0.00000000451572, 1000.0);	// quantized = 85
-	opacityTransferFunction->AddPoint(0.00000000995172, 1000.0); // quantized = 170
-	opacityTransferFunction->AddPoint(0.0000000153714, 1000.0); // quantized = 255
+	opacityTransferFunction->AddPoint(-0.000000000903996, 1.0);
+	opacityTransferFunction->AddPoint(0.00000000451572, 1.0);
+	opacityTransferFunction->AddPoint(0.00000000995172, 1.0);
+	opacityTransferFunction->AddPoint(0.0000000153714, 1.0);
 	 
 	// Create transfer mapping scalar value to color.	
 	vtkColorTransferFunction *colorTransferFunction = vtkColorTransferFunction::New();
@@ -62,6 +62,7 @@ int main(int, char* [])
 
 	// set up mapper and compositing function
 	vtkHAVSVolumeMapper *mapper = vtkHAVSVolumeMapper::New();
+	mapper->SetScalarModeToUsePointData();
 	printf("Mapper Getting output\n");
 	mapper->SetInput(reader.GetOutput());
 	printf("Mapper got output\n");
