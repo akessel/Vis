@@ -75,7 +75,7 @@ int main(int, char* [])
 	volume->SetMapper(mapper);
 	volume->SetProperty(property);	
 	ren1->AddVolume(volume);
-	
+		
 	// display the fps
 	vtkTextActor *text = vtkTextActor::New();	
 	text->SetDisplayPosition(10, 10);
@@ -83,7 +83,7 @@ int main(int, char* [])
 	MyFPSCallback *UpdateFPS = MyFPSCallback::New();
 	UpdateFPS->SetTextActor(text);
 	ren1->AddObserver(vtkCommand::EndEvent,UpdateFPS);
-	
+		
 	// start the rendering
 	iren->Initialize();
 	iren->Start();

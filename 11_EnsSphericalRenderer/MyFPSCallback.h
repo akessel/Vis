@@ -18,8 +18,9 @@ class MyFPSCallback : public vtkCommand
 		 {
 		 vtkRenderer *ren = reinterpret_cast<vtkRenderer *>(caller);
 		 float fps = 1.0/ren->GetLastRenderTimeInSeconds();
-		 sprintf(this->TextBuff,"%.1f", fps);
-		 this->TextActor->SetInput(this->TextBuff);
+//		 sprintf(this->TextBuff,"%.1f", fps);
+//		 this->TextActor->SetInput(this->TextBuff);
+		 printf("FPS: %g\n", fps);
 		 }
 	protected:
 	   vtkTextActor *TextActor;
