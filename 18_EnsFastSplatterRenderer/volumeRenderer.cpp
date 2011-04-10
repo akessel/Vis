@@ -20,74 +20,12 @@
 #include "vtkInteractorStyleJoystickActor.h"
 #include "vtkObjectFactory.h"
 #include "vtkRendererCollection.h"
+#include "vtkFastSplatter.h"
+#include "vtkImageResliceMapper.h"
 #include "vtkTextActor.h"
 
 #include "MyFPSCallback.h"
 #include "MyStructuredGridReader.h"
-
-void Cut(int n, vtkCamera *cam1, vtkPlane *plane, vtkCutter *cutter, vtkRenderWindow *renWin)
-{
-	printf("Cutting...\n");
-	vtkRenderer *ren1 = renWin->GetRenderers()->GetFirstRenderer();
-	vtkCamera *cam = ren1->GetActiveCamera();
-	cam->ComputeViewPlaneNormal();
-	plane->SetNormal(cam->GetViewPlaneNormal());
-	plane->SetOrigin(cam->GetFocalPoint());
-	cutter->GenerateValues(n, -1.0, 1.0);
-	renWin->Render();
-}
-
-// Define interaction style
-class MyInteractorStyle : public vtkInteractorStyleJoystickActor
-{
-  public:
-    static MyInteractorStyle* New();
-    vtkTypeRevisionMacro(MyInteractorStyle, vtkInteractorStyleJoystickActor);
- 
-    virtual void OnLeftButtonUp() 
-    { 
-    	printf("OnLeftButtonUp\n");
-    	Cut(this->N, this->Cam, this->Plane, this->Cutter, this->RenWin);
-      // Forward events
-      vtkInteractorStyleJoystickActor::OnLeftButtonUp();
-    }
-    
-    virtual void OnMouseWheelForward() 
-    { 
-      // Forward events
-      vtkInteractorStyleJoystickActor::OnMouseWheelForward();
-    }
-    
-    virtual void OnMouseWheelBackward() 
-    { 
-      // Forward events
-      vtkInteractorStyleJoystickActor::OnMouseWheelBackward();
-    }
- 
-    void SetActor(vtkActor *actor) {this->Actor = actor;}
-    void Set(int n, vtkActor *actor, vtkPlane *plane, vtkCamera *cam, vtkCutter *cutter, vtkRenderWindow *renWin)
-    {
-    	this->N = n;
-    	this->Actor = actor;
-    	this->Plane = plane;
-    	this->Cam = cam;
-    	this->Cutter = cutter;
-    	this->RenWin = renWin;
-    }
- 
-  private:
-  	int N;
-    vtkActor *Actor;
-    vtkPlane *Plane;
-    vtkCamera *Cam;
-    vtkCutter *Cutter;
-    vtkRenderWindow *RenWin;
- 
- 
-};
-vtkCxxRevisionMacro(MyInteractorStyle, "$Revision: 1.1 $");
-vtkStandardNewMacro(MyInteractorStyle);
-
 
 int main(int, char* [])
 {
@@ -132,16 +70,34 @@ int main(int, char* [])
 	colorTransferFunction->AddHSVPoint(0.00000000995172, 0.94, 1.0, 1.0);
 	colorTransferFunction->AddHSVPoint(0.0000000153714, 1.17, 1.0, 1.0);
 	
-	vtkPlane *plane = vtkPlane::New();
-	plane->SetOrigin(0,0,0);
-	plane->SetNormal(0,1,0);
+	vtkFastSplatter *splatter = vtkFastSplatter::New();
+	splatter->SetInput(reader.GetOutput());
 	
-	vtkCutter *cutter = vtkCutter::New();
-	cutter->SetInput(reader.GetOutput());
-	cutter->SetCutFunction(plane);
-	cutter->GenerateCutScalarsOff();
-	cutter->SetSortByToSortByCell();
+	vtkImageResliceMapper *mapper = vtkImageResliceMapper::New();
+	mapper->SetInputConnection(splatter->GetOutputPort());
+	mapper->SliceFacesCameraOn();
 	
+	vtkLookupTable *table = vtkLookupTable::New();
+	table->SetNumberOfColors(4);
+	table->Build();
+	table->SetTableValue(0, 1.0, 0.0, 0.0, 0.1);
+	table->SetTableValue(1, 0.0, 1.0, 0.0, 0.1);
+	table->SetTableValue(2, 0.0, 0.0, 1.0, 0.1);
+	table->SetTableValue(3, 1.0, 0.0, 1.0, 0.1);
+//	table->SetTableRange(-0.000000000903996, 0.0000000153714);
+//	table->SetAlphaRange(0.1, 0.1);
+//	table->SetHueRange(0.0, 1.0);
+//	table->SetSaturationRange(0.0, 1.0);
+//	table->SetValueRange(0.0, 1.0);
+//	table->SetRampToLinear();
+	mapper->SetLookupTable(table);
+	mapper->SetScalarRange(-0.000000000903996, 0.0000000153714);
+	
+	vtkActor *actor = vtkActor::New();
+	actor->SetMapper(mapper);
+	ren1->AddActor(actor);
+	
+	/*
 	vtkPolyDataMapper *mapper = vtkPolyDataMapper::New();
 	mapper->SetInputConnection(cutter->GetOutputPort());
 	
@@ -177,7 +133,7 @@ int main(int, char* [])
 	MyInteractorStyle *style = MyInteractorStyle::New();
 	style->Set(n, actor, plane, cam, cutter, renWin);
 	iren->SetInteractorStyle(style);
-	
+	*/
 	
 	
 	/*

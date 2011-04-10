@@ -4,6 +4,9 @@
 #include "vtkPolyDataMapper.h"
 #include "vtkPolyData.h"
 #include "MyPolyDataReader.h"
+#include "vtkTextActor.h"
+
+#include "MyFPSCallback.h"
 
 int main(int, char* [])
 {
@@ -60,6 +63,14 @@ int main(int, char* [])
 	vtkActor *actor = vtkActor::New();
 	actor->SetMapper(mapper);
 	ren1->AddActor(actor);
+	
+	// display the fps
+	vtkTextActor *text = vtkTextActor::New();	
+	text->SetDisplayPosition(10, 10);
+	ren1->AddActor2D(text);	
+	MyFPSCallback *UpdateFPS = MyFPSCallback::New();
+	UpdateFPS->SetTextActor(text);
+	ren1->AddObserver(vtkCommand::EndEvent,UpdateFPS);
 	
 	// start the rendering
 	iren->Initialize();

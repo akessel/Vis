@@ -14,6 +14,9 @@
 #include "vtkDataSetMapper.h"
 #include "vtkRectilinearGridReader.h"
 #include "vtkRectilinearGridToTetrahedra.h"
+#include "vtkTextActor.h"
+
+#include "MyFPSCallback.h"
 #include "vtkStructuredPointsReader.h"
 
 #define FILEPATH "../SampleData/StructuredPoints/matrix.vtk"
@@ -78,6 +81,14 @@ int main(int, char* [])
 	renWin->AddRenderer(ren1);
 	vtkRenderWindowInteractor *iren = vtkRenderWindowInteractor::New();
 	iren->SetRenderWindow(renWin);
+	
+	// display the fps
+	vtkTextActor *text = vtkTextActor::New();	
+	text->SetDisplayPosition(10, 10);
+	ren1->AddActor2D(text);	
+	MyFPSCallback *UpdateFPS = MyFPSCallback::New();
+	UpdateFPS->SetTextActor(text);
+	ren1->AddObserver(vtkCommand::EndEvent,UpdateFPS);
 	
 	// start the rendering
 	iren->Initialize();

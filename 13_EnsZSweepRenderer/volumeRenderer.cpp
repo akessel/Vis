@@ -7,6 +7,9 @@
 #include "vtkPiecewiseFunction.h"
 #include "vtkVolumeProperty.h"
 #include "vtkVolume.h"
+#include "vtkTextActor.h"
+
+#include "MyFPSCallback.h"
 #include "MyUnstructuredGridReader.h"
 
 int main(int, char* [])
@@ -60,6 +63,14 @@ int main(int, char* [])
 	volume->SetMapper(mapper);
 	volume->SetProperty(property);	
 	ren1->AddViewProp(volume);
+	
+	// display the fps
+	vtkTextActor *text = vtkTextActor::New();	
+	text->SetDisplayPosition(10, 10);
+	ren1->AddActor2D(text);	
+	MyFPSCallback *UpdateFPS = MyFPSCallback::New();
+	UpdateFPS->SetTextActor(text);
+	ren1->AddObserver(vtkCommand::EndEvent,UpdateFPS);
 	
 	// start the rendering
 	iren->Initialize();
