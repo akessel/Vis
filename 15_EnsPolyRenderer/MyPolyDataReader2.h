@@ -1,5 +1,5 @@
-#ifndef _MYPOLYDATAREADER_H_
-#define _MYPOLYDATAREADER_H_
+#ifndef _MYPOLYDATAREADER2_H_
+#define _MYPOLYDATAREADER2_H_
 
 #include <stdio.h>
 #include <string>
@@ -22,7 +22,7 @@
 
 using namespace std;
 
-class MyPolyDataReader
+class MyPolyDataReader2
 {
 	private:
 		int nRad, nLat, nLong;
@@ -34,7 +34,7 @@ class MyPolyDataReader
 		MyFileReader<float> reader;
 
 	public:
-		MyPolyDataReader(string filename, int nRad, int nLat, int nLong,
+		MyPolyDataReader2(string filename, int nRad, int nLat, int nLong,
 								 double minRad, double minLat, double minLong, double maxRad, double maxLat, double maxLong)
 		{
 			this->reader.SetFilename(filename);
@@ -55,7 +55,10 @@ class MyPolyDataReader
 	
 			vtkPolyData *data = vtkPolyData::New();
 	
-			int numPoints = this->nRad * this->nLat * this->nLong;			
+			// add 2*nRad because we will be adding points along the axis of the sphere
+			//int numPoints = this->nRad * this->nLat * this->nLong + 2 * this->nRad;
+			// add 2*nRad*nLong because we will be adding points along the axis of the sphere (nLong overlapping points at the very center)
+			int numPoints = this->nRad * this->nLat * this->nLong + 2 * this->nRad * this->nLong;
 	
 			vtkPoints *points = vtkPoints::New();
 //			vtkFloatArray *scalars = vtkFloatArray::New();
@@ -79,7 +82,7 @@ class MyPolyDataReader
 			int count = 0;
 			for(int i = 0; i < this->nLong; i++)			
 			{		
-				for(int j = 0; j < this->nLat; j++)
+				for(int j = -1; j <= this->nLat; j++) // two extra iterations for adding points on the axis of the sphere
 				{
 					for(int k = 0; k < this->nRad; k++)
 					{
@@ -89,9 +92,26 @@ class MyPolyDataReader
 						if(value > max) max = value;
 						if(value < min) min = value;
 						
-						double rad = k * ( (this->maxRad - this->minRad) / this->nRad ) + this->minRad;
-						double phi = j * ( (this->maxLat - this->minLat) / this->nLat ) + this->minLat;
-						double theta = i * ( (this->maxLong - this->minLong) / this->nLong ) + this->minLong;
+						double rad, phi, theta;
+						
+						if(j == -1)
+						{
+							rad = k * ( (this->maxRad - this->minRad) / this->nRad ) + this->minRad;
+							phi = 90.0;
+							theta = 0.0;
+						}
+						else if(j == this->nLat)
+						{
+							rad = k * ( (this->maxRad - this->minRad) / this->nRad ) + this->minRad;
+							phi = -90.0;
+							theta = 0.0;
+						}
+						else
+						{
+							rad = k * ( (this->maxRad - this->minRad) / this->nRad ) + this->minRad;
+							phi = j * ( (this->maxLat - this->minLat) / this->nLat ) + this->minLat;
+							theta = i * ( (this->maxLong - this->minLong) / this->nLong ) + this->minLong;
+						}
 						
 						double x = rad * sin(theta*PI/180.0) * cos(phi*PI/180.0);
 						double y = rad * sin(phi*PI/180.0);
@@ -240,6 +260,42 @@ class MyPolyDataReader
 				}
 			}
 			
+			/*
+			// add the points along the axis of the sphere
+			for(int k = 0; k < this->nRad; k++)
+			{						
+				double rad = k * ( (this->maxRad - this->minRad) / this->nRad ) + this->minRad;
+				double phi1 = 90.0;
+				double phi2 = -90.0;
+				double theta = 0;
+				
+				double x1 = rad * sin(theta*PI/180.0) * cos(phi1*PI/180.0);
+				double x2 = rad * sin(theta*PI/180.0) * cos(phi2*PI/180.0);
+				double y1 = rad * sin(phi1*PI/180.0);
+				double y2 = rad * sin(phi2*PI/180.0);
+				double z1 = rad * cos(theta*PI/180.0) * cos(phi1*PI/180.0);
+				double z2 = rad * cos(theta*PI/180.0) * cos(phi2*PI/180.0);
+		
+				points->InsertPoint(count, x1, y1, z1);
+//				scalars->InsertValue(count, value);				
+				vtkVertex *vertex1 = vtkVertex::New();
+				vertex1->GetPointIds()->SetNumberOfIds(1);
+				vertex1->GetPointIds()->SetId(0, count);
+				vertices->InsertNextCell(vertex1);
+				
+				count++;
+		
+				points->InsertPoint(count, x2, y2, z2);
+//				scalars->InsertValue(count, value);				
+				vtkVertex *vertex2 = vtkVertex::New();
+				vertex2->GetPointIds()->SetNumberOfIds(1);
+				vertex2->GetPointIds()->SetId(0, count);
+				vertices->InsertNextCell(vertex2);
+				
+				count++;
+			}
+			*/
+			
 			printf("Inserting points...\n");
 			data->SetPoints(points);
 //			printf("Inserting scalars...\n");
@@ -257,7 +313,7 @@ class MyPolyDataReader
 			return data;		
 		}
 		
-		~MyPolyDataReader()
+		~MyPolyDataReader2()
 		{
 		}
 		
