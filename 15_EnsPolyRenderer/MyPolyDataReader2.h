@@ -81,33 +81,34 @@ class MyPolyDataReader2
 			// iterate through the points, transforming them to spherical
 			int count = 0;
 			for(int i = 0; i < this->nLong; i++)			
-			{		
-				for(int j = -1; j <= this->nLat; j++) // two extra iterations for adding points on the axis of the sphere
-				{
+			{	
 					for(int k = 0; k < this->nRad; k++)
-					{
+					{	
+				for(int j = 0; j < this->nLat; j++) // two extra iterations for adding points on the axis of the sphere
+				{
 						
-						float value = this->reader.GetNextValue();
+						float value = 0.0;
 
-						if(value > max) max = value;
-						if(value < min) min = value;
+//						if(value > max) max = value;
+//						if(value < min) min = value;
 						
 						double rad, phi, theta;
 						
 						if(j == -1)
 						{
 							rad = k * ( (this->maxRad - this->minRad) / this->nRad ) + this->minRad;
-							phi = 90.0;
-							theta = 0.0;
+							phi = -90.0;
+							theta = i * ( (this->maxLong - this->minLong) / this->nLong ) + this->minLong;
 						}
 						else if(j == this->nLat)
 						{
 							rad = k * ( (this->maxRad - this->minRad) / this->nRad ) + this->minRad;
-							phi = -90.0;
-							theta = 0.0;
+							phi = 90.0;
+							theta = i * ( (this->maxLong - this->minLong) / this->nLong ) + this->minLong;
 						}
 						else
 						{
+							value = this->reader.GetNextValue();
 							rad = k * ( (this->maxRad - this->minRad) / this->nRad ) + this->minRad;
 							phi = j * ( (this->maxLat - this->minLat) / this->nLat ) + this->minLat;
 							theta = i * ( (this->maxLong - this->minLong) / this->nLong ) + this->minLong;
@@ -235,25 +236,26 @@ class MyPolyDataReader2
 							line18->GetPointIds()->SetId(0, BLB);
 							line18->GetPointIds()->SetId(1, FRB);
 							
-							if(count%10000 == 0 || (i==1 && j==1 && k==1)){
-							cells->InsertNextCell(line01);
-							cells->InsertNextCell(line02);
-							cells->InsertNextCell(line03);
-							cells->InsertNextCell(line04);
-							cells->InsertNextCell(line05);
-							cells->InsertNextCell(line06);
-							cells->InsertNextCell(line07);
-							cells->InsertNextCell(line08);
-							cells->InsertNextCell(line09);
-							cells->InsertNextCell(line10);
-							cells->InsertNextCell(line11);
-							cells->InsertNextCell(line12);
-							cells->InsertNextCell(line13);
-							cells->InsertNextCell(line14);
-							cells->InsertNextCell(line15);
-							cells->InsertNextCell(line16);
-							cells->InsertNextCell(line17);
-							cells->InsertNextCell(line18);
+							if(i == 1 && j == 1 && k == 1)
+							{
+								cells->InsertNextCell(line01);
+								cells->InsertNextCell(line02);
+								cells->InsertNextCell(line03);
+								cells->InsertNextCell(line04);
+								cells->InsertNextCell(line05);
+								cells->InsertNextCell(line06);
+								cells->InsertNextCell(line07);
+								cells->InsertNextCell(line08);
+								cells->InsertNextCell(line09);
+								cells->InsertNextCell(line10);
+								cells->InsertNextCell(line11);
+								cells->InsertNextCell(line12);
+								cells->InsertNextCell(line13);
+								cells->InsertNextCell(line14);
+								cells->InsertNextCell(line15);
+								cells->InsertNextCell(line16);
+								cells->InsertNextCell(line17);
+								cells->InsertNextCell(line18);
 							}
 						}
 					}

@@ -93,13 +93,13 @@ class MyStructuredGridReader2
 						{
 							rad = k * ( (this->maxRad - this->minRad) / this->nRad ) + this->minRad;
 							phi = -90.0;
-							theta = 0.0;
+							theta = -180.0;
 						}
 						else if(j == this->nLat)
 						{
 							rad = k * ( (this->maxRad - this->minRad) / this->nRad ) + this->minRad;
 							phi = 90.0;
-							theta = 0.0;
+							theta = 180.0;
 						}
 						else
 						{
