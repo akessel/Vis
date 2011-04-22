@@ -24,6 +24,7 @@
 
 #include "MyFPSCallback.h"
 #include "MyStructuredGridReader.h"
+#include "MyStructuredGridReader3.h"
 
 void Cut(int n, vtkCamera *cam1, vtkPlane *plane, vtkCutter *cutter, vtkRenderWindow *renWin)
 {
@@ -103,9 +104,14 @@ int main(int, char* [])
 	
 	// load the volume data
 //	MyStructuredGridReader reader("../SampleData/RAW/ens.raw",258,256,512,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
-	MyStructuredGridReader reader("../SampleData/RAW/ens0.raw",33,32,64,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
+//	MyStructuredGridReader reader("../SampleData/RAW/ens0.raw",33,32,64,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
 //	MyStructuredGridReader reader("../SampleData/RAW/ens1.raw",65,64,128,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
 //	MyStructuredGridReader reader("../SampleData/RAW/ens2.raw",129,128,256,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
+
+//	MyStructuredGridReader3 reader("../SampleData/RAW/ens.raw",258,256,512,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
+	MyStructuredGridReader3 reader("../SampleData/RAW/ens0.raw",33,32,64,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
+//	MyStructuredGridReader3 reader("../SampleData/RAW/ens1.raw",65,64,128,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
+//	MyStructuredGridReader3 reader("../SampleData/RAW/ens2.raw",129,128,256,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
 	
 	// Create transfer mapping scalar value to opacity.
 	vtkPiecewiseFunction *opacityTransferFunction = vtkPiecewiseFunction::New();
