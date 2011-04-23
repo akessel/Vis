@@ -1,5 +1,5 @@
-#ifndef _MYUNSTRUCTUREDGRIDREADER3_H_
-#define _MYUNSTRUCTUREDGRIDREADER3_H_
+#ifndef _MYUNSTRUCTUREDGRIDREADER_H_
+#define _MYUNSTRUCTUREDGRIDREADER_H_
 
 #include <stdio.h>
 #include <string>
@@ -15,6 +15,19 @@
 #include "MyFileReader.h"
 
 #define PI 3.14159265
+
+/*
+
+Tricks:
+1. Added points along axis to plug up holes at poles
+2. Added "ghost" points on top of those at nLong = 0 to stitch up slice
+3. Multiplied the y coordinate by -1 to resolve the mirroring issue between Vapor and Paraview
+
+Points 1 and 2 essentially amount to adding extra points to stitch up holes in the model
+
+Still need to interpolate the values at the poles (right now they're just set to zero)
+
+*/
 
 using namespace std;
 
@@ -50,9 +63,12 @@ class MyStructuredGridReader
 			printf("Starting to get output...\n");
 	
 			vtkStructuredGrid *grid = vtkStructuredGrid::New();
-			grid->SetDimensions(this->nRad, this->nLat, this->nLong + 1); // +1 for nLong for the ghost row/stitching up the discontinuity
+			grid->SetDimensions(this->nRad, this->nLat + 2, this->nLong + 1); // +1 for nLong for the ghost row/stitching up the discontinuity
+																			  // +2 for nLat for adding points along the axis
 	
-			int numPoints = this->nRad * this->nLat * (this->nLong + 1); // +1 for nLong for the ghost row/stitching up the discontinuity	
+			// (this->nLong + 1) for the ghost row/stitching up the discontinuity
+			// (this->nLat + 2) for adding points along the axis of the sphere
+			int numPoints = this->nRad * (this->nLat + 2) * (this->nLong + 1);
 	
 			vtkPoints *points = vtkPoints::New();
 			vtkFloatArray *scalars = vtkFloatArray::New();
@@ -76,20 +92,43 @@ class MyStructuredGridReader
 			int count = 0;
 			for(int i = 0; i <= this->nLong; i++) // extra step along longitude will sew up the discontinuity
 			{		
-				for(int j = 0; j < this->nLat; j++)
+				for(int j = -1; j <= this->nLat; j++) // two extra iterations for adding points on the axis of the sphere
 				{
 					for(int k = 0; k < this->nRad; k++)
 					{
 						if(i != this->nLong)
 						{
-							float value = this->reader.GetNextValue();
+//							float value = this->reader.GetNextValue();
+							float value = 0;
 						
 							//if(value > max) max = value;
 							//if(value < min) min = value;
 						
-							double rad = k * ( (this->maxRad - this->minRad) / this->nRad ) + this->minRad;
-							double phi = j * ( (this->maxLat - this->minLat) / this->nLat ) + this->minLat;
-							double theta = i * ( (this->maxLong - this->minLong) / this->nLong ) + this->minLong;
+//							double rad = k * ( (this->maxRad - this->minRad) / this->nRad ) + this->minRad;
+//							double phi = j * ( (this->maxLat - this->minLat) / this->nLat ) + this->minLat;
+//							double theta = i * ( (this->maxLong - this->minLong) / this->nLong ) + this->minLong;
+						
+							double rad, phi, theta;
+						
+							if(j == -1)
+							{
+								rad = k * ( (this->maxRad - this->minRad) / this->nRad ) + this->minRad;
+								phi = -90.0;
+								theta = -180.0;
+							}
+							else if(j == this->nLat)
+							{
+								rad = k * ( (this->maxRad - this->minRad) / this->nRad ) + this->minRad;
+								phi = 90.0;
+								theta = 180.0;
+							}
+							else
+							{
+								value = this->reader.GetNextValue();
+								rad = k * ( (this->maxRad - this->minRad) / this->nRad ) + this->minRad;
+								phi = j * ( (this->maxLat - this->minLat) / this->nLat ) + this->minLat;
+								theta = i * ( (this->maxLong - this->minLong) / this->nLong ) + this->minLong;
+							}
 						
 							double x = rad * sin(theta*PI/180.0) * cos(phi*PI/180.0);
 							double y = -1 * rad * sin(phi*PI/180.0);
@@ -112,7 +151,7 @@ class MyStructuredGridReader
 						}
 						else // i == this->nLong // ghost rows; stitching up the discontinuity
 						{
-							int pseudoCount = j * this->nRad + k;
+							int pseudoCount = (j+1) * this->nRad + k;
 							double xyz[3];
 							points->GetPoint(pseudoCount, xyz);
 							float value = scalars->GetValue(pseudoCount);

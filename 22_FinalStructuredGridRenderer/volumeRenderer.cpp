@@ -25,9 +25,6 @@
 #include "vtkTextActor.h"
 
 #include "MyStructuredGridReader.h"
-#include "MyStructuredGridReader2.h"
-#include "MyStructuredGridReader3.h"
-#include "MyStructuredGridReader4.h"
 #include "MyFPSCallback.h"
 
 int main(int, char* [])
@@ -44,24 +41,9 @@ int main(int, char* [])
 	
 	// load the volume data
 //	MyStructuredGridReader reader("../SampleData/RAW/ens.raw",258,256,512,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
-//	MyStructuredGridReader reader("../SampleData/RAW/ens0.raw",33,32,64,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
+	MyStructuredGridReader reader("../SampleData/RAW/ens0.raw",33,32,64,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
 //	MyStructuredGridReader reader("../SampleData/RAW/ens1.raw",65,64,128,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
 //	MyStructuredGridReader reader("../SampleData/RAW/ens2.raw",129,128,256,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
-
-//	MyStructuredGridReader2 reader("../SampleData/RAW/ens.raw",258,256,512,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
-//	MyStructuredGridReader2 reader("../SampleData/RAW/ens0.raw",33,32,64,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
-//	MyStructuredGridReader2 reader("../SampleData/RAW/ens1.raw",65,64,128,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
-//	MyStructuredGridReader2 reader("../SampleData/RAW/ens2.raw",129,128,256,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
-
-//	MyStructuredGridReader3 reader("../SampleData/RAW/ens.raw",258,256,512,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
-//	MyStructuredGridReader3 reader("../SampleData/RAW/ens0.raw",33,32,64,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
-//	MyStructuredGridReader3 reader("../SampleData/RAW/ens1.raw",65,64,128,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
-//	MyStructuredGridReader3 reader("../SampleData/RAW/ens2.raw",129,128,256,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
-
-//	MyStructuredGridReader4 reader("../SampleData/RAW/ens.raw",258,256,512,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
-	MyStructuredGridReader4 reader("../SampleData/RAW/ens0.raw",33,32,64,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
-//	MyStructuredGridReader4 reader("../SampleData/RAW/ens1.raw",65,64,128,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
-//	MyStructuredGridReader4 reader("../SampleData/RAW/ens2.raw",129,128,256,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
 	
 	vtkDataSetMapper *mapper = vtkDataSetMapper::New();
 	mapper->SetInput(reader.GetOutput());
