@@ -14,6 +14,7 @@
 
 #include "MyFPSCallback.h"
 #include "MyUnstructuredGridReader.h"
+#include "MyUnstructuredGridReader2.h"
 
 
 int main(int, char* [])
@@ -27,9 +28,14 @@ int main(int, char* [])
 	
 	// load the volume data
 //	MyUnstructuredGridReader reader("../SampleData/RAW/ens.raw",258,256,512,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
-	MyUnstructuredGridReader reader("../SampleData/RAW/ens0.raw",33,32,64,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
+//	MyUnstructuredGridReader reader("../SampleData/RAW/ens0.raw",33,32,64,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
 //	MyUnstructuredGridReader reader("../SampleData/RAW/ens1.raw",65,64,128,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
 //	MyUnstructuredGridReader reader("../SampleData/RAW/ens2.raw",129,128,256,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
+
+//	MyUnstructuredGridReader2 reader("../SampleData/RAW/ens.raw",258,256,512,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
+	MyUnstructuredGridReader2 reader("../SampleData/RAW/ens0.raw",33,32,64,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
+//	MyUnstructuredGridReader2 reader("../SampleData/RAW/ens1.raw",65,64,128,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
+//	MyUnstructuredGridReader2 reader("../SampleData/RAW/ens2.raw",129,128,256,0.571,-89.6484,-179.648,1.0,89.6484,179.648);
 	
 	// Create transfer mapping scalar value to opacity.
 	vtkPiecewiseFunction *opacityTransferFunction = vtkPiecewiseFunction::New();

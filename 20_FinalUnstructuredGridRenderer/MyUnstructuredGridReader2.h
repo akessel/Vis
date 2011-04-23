@@ -1,5 +1,5 @@
-#ifndef _MYUNSTRUCTUREDGRIDREADER_H_
-#define _MYUNSTRUCTUREDGRIDREADER_H_
+#ifndef _MyUnstructuredGridReader22_H_
+#define _MyUnstructuredGridReader22_H_
 
 #include <stdio.h>
 #include <string>
@@ -18,7 +18,7 @@
 
 using namespace std;
 
-class MyUnstructuredGridReader
+class MyUnstructuredGridReader2
 {
 	private:
 		int nRad, nLat, nLong;
@@ -30,7 +30,7 @@ class MyUnstructuredGridReader
 		MyFileReader<float> reader;
 
 	public:
-		MyUnstructuredGridReader(string filename, int nRad, int nLat, int nLong,
+		MyUnstructuredGridReader2(string filename, int nRad, int nLat, int nLong,
 								 double minRad, double minLat, double minLong, double maxRad, double maxLat, double maxLong)
 		{
 			this->reader.SetFilename(filename);
@@ -51,7 +51,8 @@ class MyUnstructuredGridReader
 	
 			vtkUnstructuredGrid *grid = vtkUnstructuredGrid::New();
 	
-			int numPoints = this->nRad * this->nLat * this->nLong;
+			// (this->nLat + 2) for adding points along the axis of the sphere
+			int numPoints = this->nRad * (this->nLat + 2) * this->nLong;
 	
 			vtkPoints *points = vtkPoints::New();
 			vtkFloatArray *scalars = vtkFloatArray::New();
@@ -69,19 +70,36 @@ class MyUnstructuredGridReader
 			int count = 0;
 			for(int i = 0; i < this->nLong; i++)			
 			{		
-				for(int j = 0; j < this->nLat; j++)
+				for(int j = -1; j <= this->nLat; j++) // two extra iterations for adding points on the axis of the sphere
 				{
 					for(int k = 0; k < this->nRad; k++)
 					{
-						
-						float value = this->reader.GetNextValue();
+						float value = 0;
 						
 						//if(value > max) max = value;
 						//if(value < min) min = value;
-						
-						double rad = k * ( (this->maxRad - this->minRad) / this->nRad ) + this->minRad;
-						double phi = j * ( (this->maxLat - this->minLat) / this->nLat ) + this->minLat;
-						double theta = i * ( (this->maxLong - this->minLong) / this->nLong ) + this->minLong;
+
+						double rad, phi, theta;
+					
+						if(j == -1)
+						{
+							rad = k * ( (this->maxRad - this->minRad) / this->nRad ) + this->minRad;
+							phi = -90.0;
+							theta = -180.0;
+						}
+						else if(j == this->nLat)
+						{
+							rad = k * ( (this->maxRad - this->minRad) / this->nRad ) + this->minRad;
+							phi = 90.0;
+							theta = 180.0;
+						}
+						else
+						{
+							value = this->reader.GetNextValue();
+							rad = k * ( (this->maxRad - this->minRad) / this->nRad ) + this->minRad;
+							phi = j * ( (this->maxLat - this->minLat) / this->nLat ) + this->minLat;
+							theta = i * ( (this->maxLong - this->minLong) / this->nLong ) + this->minLong;
+						}
 						
 						double x = rad * sin(theta*PI/180.0) * cos(phi*PI/180.0);
 						double y = -1 * rad * sin(phi*PI/180.0);
@@ -131,6 +149,28 @@ class MyUnstructuredGridReader
 							
 							this->InsertTetrahedrons(FLT, FLB, FRT, FRB, BLT, BLB, BRT, BRB, cells);
 						}
+//						else if(i > 0 && j == -1 && k > 0) // this plugs up the little whole on one of the poles
+//						{
+//							FLT = this->LinearizeCoordinate(i,j-1,k);
+//							FLB = this->LinearizeCoordinate(i-1,j-1,k-1);
+//							FRT = this->LinearizeCoordinate(i-1,j-1,k);
+//							FRB = this->LinearizeCoordinate(i,j-1,k-1);
+//							int BMT = this->LinearizeCoordinate(i,j,k);
+//							int BMB = this->LinearizeCoordinate(i,j,k-1);
+//							
+//							this->InsertTetrahedrons(FLT, FLB, FRT, FRB, BMT, BMB, cells);
+//						}
+						else if(i > 0 && j == this->nLat && k > 0) // this plugs up the big whole on one of the poles
+						{
+							FLT = this->LinearizeCoordinate(i,j-1,k);
+							FLB = this->LinearizeCoordinate(i-1,j-1,k-1);
+							FRT = this->LinearizeCoordinate(i-1,j-1,k);
+							FRB = this->LinearizeCoordinate(i,j-1,k-1);
+							int BMT = this->LinearizeCoordinate(i,j,k);
+							int BMB = this->LinearizeCoordinate(i,j,k-1);
+							
+							this->InsertTetrahedrons(FLT, FLB, FRT, FRB, BMT, BMB, cells);
+						}
 					}
 				}
 			}
@@ -150,16 +190,27 @@ class MyUnstructuredGridReader
 			return grid;		
 		}
 		
-		~MyUnstructuredGridReader()
+		~MyUnstructuredGridReader2()
 		{
 		}
 		
 	private:		
 		int LinearizeCoordinate(int i, int j, int k)
 		{
-			return i*this->nLat*this->nRad + j*this->nRad + k;
+			return i*(this->nLat+2)*this->nRad + (j+1)*this->nRad + k;  // this->nLat + 2 because we added points along the axis of the sphere
+																		// j + 1 because we are starting our iterations from j = -1 instead of j = 0
 		}
 		
+		// Decomposes the cube of the given vertices into five tetrahedrons
+		//
+		// FLT: Front Left Top
+		// FLB: Front Left Bottom
+		// FRT: Front Right Top
+		// FRB: Front Right Bottom
+		// BLT: Back Left Top
+		// BLB: Back Left Bottom
+		// BRT: Back Right Top
+		// BRB: Back Right Bottom
 		void InsertTetrahedrons(int FLT, int FLB, int FRT, int FRB, int BLT, int BLB, int BRT, int BRB, vtkCellArray *cells)
 		{
 			// each cube is composed of five tetrahedrons
@@ -174,6 +225,13 @@ class MyUnstructuredGridReader
 			backLeftCell->GetPointIds()->SetNumberOfIds(4);
 			backRightCell->GetPointIds()->SetNumberOfIds(4);
 			centerCell->GetPointIds()->SetNumberOfIds(4);
+			
+			// the order for adding points to each tetrahedron is critical
+			// 1. pick any face of the tetra to be the "base"
+			// 2. add the points at the corners of the base in a counter-clockwise order, or based on the right-hand rule
+			//    (so the order of the points is such that if you curl the fingers of your right hand around in the 
+			//    direction of adding the points, then your thumb will point in the direction of the fourth point)
+			// 3. finally add the fourth point that is not a corner of the base
 			
 			frontLeftCell->GetPointIds()->SetId(0, FLB);
 			frontLeftCell->GetPointIds()->SetId(1, FRB);
@@ -205,6 +263,52 @@ class MyUnstructuredGridReader
 			cells->InsertNextCell(backLeftCell);
 			cells->InsertNextCell(backRightCell);							
 			cells->InsertNextCell(centerCell);
+		}
+		
+		// Decomposes the 3D "pie slice" of the given vertices into three tetrahedrons
+		//
+		// FLT: Front Left Top
+		// FLB: Front Left Bottom
+		// FRT: Front Right Top
+		// FRB: Front Right Bottom
+		// BMT: Back Middle Top
+		// BMB: Back Middle Bottom
+		void InsertTetrahedrons(int FLT, int FLB, int FRT, int FRB, int BMT, int BMB, vtkCellArray *cells)
+		{
+			// each slice is composed of three tetrahedrons
+			vtkTetra *frontLeftCell = vtkTetra::New();
+			vtkTetra *frontRightCell = vtkTetra::New();
+			vtkTetra *backCell = vtkTetra::New();
+	
+			frontLeftCell->GetPointIds()->SetNumberOfIds(4);
+			frontRightCell->GetPointIds()->SetNumberOfIds(4);
+			backCell->GetPointIds()->SetNumberOfIds(4);
+			
+			// the order for adding points to each tetrahedron is critical
+			// 1. pick any face of the tetra to be the "base"
+			// 2. add the points at the corners of the base in a counter-clockwise order, or based on the right-hand rule
+			//    (so the order of the points is such that if you curl the fingers of your right hand around in the 
+			//    direction of adding the points, then your thumb will point in the direction of the fourth point)
+			// 3. finally add the fourth point that is not a corner of the base
+			
+			frontLeftCell->GetPointIds()->SetId(0, FLB);
+			frontLeftCell->GetPointIds()->SetId(1, BMT);
+			frontLeftCell->GetPointIds()->SetId(2, FRB);
+			frontLeftCell->GetPointIds()->SetId(3, FLT);
+			
+			frontRightCell->GetPointIds()->SetId(0, FLT);
+			frontRightCell->GetPointIds()->SetId(1, BMT);
+			frontRightCell->GetPointIds()->SetId(2, FRB);
+			frontRightCell->GetPointIds()->SetId(3, FRT);
+			
+			backCell->GetPointIds()->SetId(0, FLB);
+			backCell->GetPointIds()->SetId(1, BMB);
+			backCell->GetPointIds()->SetId(2, FRB);
+			backCell->GetPointIds()->SetId(3, BMT);
+
+			cells->InsertNextCell(frontLeftCell);
+			cells->InsertNextCell(frontRightCell);
+			cells->InsertNextCell(backCell);
 		}
 };
 

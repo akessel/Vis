@@ -1,0 +1,22 @@
+VTK HAVS and Unstructured Grid
+------------------------------
+1. The VTK HAVS renderer has quite a few rendering artifacts
+2. The unstructured grid for HAVS is HUGE!
+3. It is not trivial to create the unstructured grid
+4. The performance of the HAVS renderer is poor (probably from the large size of the grid info)
+5. The HAVS renderer is not giving a full opaqueness
+6. Needed to perform "tricks" (new points along axis, wrap-around cells to stitch up slice) to fill discontinuities in the model
+
+Paraview and Structured Grid
+----------------------------
+1. The structured grid is larger than the raw data
+2. It is not trivial to create the structured grid (though much easier than the unstructured grid)
+3. Needed to perform "tricks" (new points along axis, ghost points to stitch up slice) to fill discontinuities in the model
+
+			Size (bytes)
+Level		RAW				StructuredGrid			UnstructuredGrid
+--------------------------------------------------------------------
+  0			270,366			1,167,050				9,013,441
+  1			2,129,920		8,854,733				N/A (out of memory)
+  2			16,908,288		68,958,417				N/A (out of memory)
+ full		135,266,304		546,357,491				N/A (out of memory)
